@@ -1,0 +1,5 @@
+# BadApple utilities
+These are some useful utilities that I have ported to work in the BadApple shell.
+Commands to run them:
+Daub: ``curl -LO https://raw.githubusercontent/crosbreaker/BadApple-utilities/main/daub.sh && sh daub.sh``
+Unkeyroll:  ``curl -LO https://raw.githubusercontent/crosbreaker/BadApple-utilities/main/unkeyroll.sh && sh unkeyroll.sh
