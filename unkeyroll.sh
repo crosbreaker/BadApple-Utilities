@@ -91,7 +91,3 @@ fi
 echo   
 
 echo "Please reboot your system manually to see changes take effect"
-echo "Haha! Get rebooted!"
-sleep 1
-reboot -f
-echo "How the fuck did you get here? EC reset, pwetty pwease :3"
