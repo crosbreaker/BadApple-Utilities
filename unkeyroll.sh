@@ -14,7 +14,7 @@ RECOVERY_KEY_CORSOLA_FILE="corsola_recovery_v1.vbpubk"
 echo -e "\e[32m<Firmware2>  Copyleft (C) 2024  Cruzy22k\e[0m"
 echo -e "\e[32mThis program comes with ABSOLUTELY NO WARRANTY.\e[0m"
 echo -e "\e[32mThis is free software, and you are welcome to redistribute it under certain conditions.\e[0m"
-echo "modified by kraeb"
+echo "modified by kraeb and HarryJarry1"
 echo
 
 
@@ -77,7 +77,7 @@ else
 fi
 echo "Process completed successfully, reboot and try to boot a shim" 
 echo " "
-echo "Made by cruzy22k - qol fixes by kraeb" 
+echo "Made by cruzy22k - qol fixes by kraeb, port to the BadApple terminal by HarryJarry1" 
 echo ":)"
 echo " A reboot is required for the changes to take effect."
 echo " "
