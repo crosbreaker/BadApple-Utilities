@@ -15,16 +15,17 @@ RECOVERY_KEY_CORSOLA_FILE="corsola_recovery_v1.vbpubk"
 echo -e "\e[32m<Firmware2>  Copyleft (C) 2024  Cruzy22k\e[0m"
 echo -e "\e[32mThis program comes with ABSOLUTELY NO WARRANTY.\e[0m"
 echo -e "\e[32mThis is free software, and you are welcome to redistribute it under certain conditions.\e[0m"
+echo "modified by kraeb"
 echo
 
 
-echo "please select what device you have, dedede (1), nissa (2) or corsola (3)"
+echo -e "Select your board\ndedede (1)\nnissa (2)\ncorsola (3)"
 echo    
 read -p "Enter the number of the device you have: " -n 1 -r
 echo   
 
 
-echo "DEBUG: You entered '$REPLY'"
+# echo "DEBUG: You entered '$REPLY'" (this is not necessary)
 if [[ $REPLY =~ ^[1]$ ]]; then
     RECOVERY_KEY_URL="$RECOVERY_KEY_DEDEDE"
     RECOVERY_KEY_FILE="$RECOVERY_KEY_DEDEDE_FILE"
@@ -35,21 +36,15 @@ elif [[ $REPLY =~ ^[3]$ ]]; then
     RECOVERY_KEY_URL="$RECOVERY_KEY_CORSOLA"
     RECOVERY_KEY_FILE="$RECOVERY_KEY_CORSOLA_FILE"
 else
-    echo "Invalid input. Please enter 1, 2 or 3."
+    echo "Invalid input. Please enter your board as instructed."
     exit 1
 fi
 
-# Debug output:
-echo "DEBUG: Selected URL: $RECOVERY_KEY_URL"
-echo "DEBUG: Selected file name: $RECOVERY_KEY_FILE"
-
-
-
+#again, not necessary Debug output:
+#echo "DEBUG: Selected URL: $RECOVERY_KEY_URL"
+#echo "DEBUG: Selected file name: $RECOVERY_KEY_FILE"
 
 mkdir -p "$DOWNLOADS_DIR"
-
-
-
 echo "Downloading the recovery key file..."
 cd "$DOWNLOADS_DIR" || exit 1
 curl -L -o "$RECOVERY_KEY_FILE" "$RECOVERY_KEY_URL"
@@ -62,6 +57,7 @@ fi
 echo "Downloaded the recovery key file to $DOWNLOADS_DIR/$RECOVERY_KEY_FILE."
 
 # Ask for confirmation before applying the recovery key
+flashrom -p internal --wp-disable # if HWWP is off, this'll work, this is more of a safety check
 echo "WARNING: Before proceeding, ensure that Write Protect (WP) is disabled on your device."
 echo "Failure to disable WP may result in the recovery key not being applied correctly."
 read -p "Are you sure you want to apply the recovery key with futility? (y/n) " -n 1 -r
@@ -72,23 +68,19 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 
-echo "Applying the recovery key with futility..."
+echo "Applying recovery key..."
 futility gbb -s --flash --recoverykey="$DOWNLOADS_DIR/$RECOVERY_KEY_FILE"
-
-# Check if application was successful
 if [ $? -eq 0 ]; then
     echo "Successfully applied the recovery key."
 else
-    echo "Failed to apply the recovery key."
+    echo "Failed to apply recovery key!"
     exit 1
 fi
 echo "Process completed successfully, reboot and try to boot a shim" 
 echo " "
-echo "Made by cruzy22k" 
+echo "Made by cruzy22k - qol fixes by kraeb" 
 echo ":)"
 echo " A reboot is required for the changes to take effect."
-echo "Clearing the vbpubk files from the Downloads folder..."
-echo "the vbpubk files have been removed from the Downloads folder."
 echo " "
 read -p "Do you want to reboot now? (y/n) " -n 1 -r
 echo   
@@ -99,3 +91,7 @@ fi
 echo   
 
 echo "Please reboot your system manually to see changes take effect"
+echo "Haha! Get rebooted!"
+sleep 1
+reboot -f
+echo "How the fuck did you get here? EC reset, pwetty pwease :3"
