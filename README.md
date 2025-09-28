@@ -1,6 +1,6 @@
 # BadApple utilities
 These are some useful utilities that I have ported to work in the BadApple shell. \
-Commands to run them: 
+Commands to run them (after connecting to the internet and performing [BadApple](https://github.com/applefritter-inc/BadApple)): 
 
 ### br0ker:  
 `curl -LO https://ba.crosbreaker.dev/daub.sh && sh daub.sh`
