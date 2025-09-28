@@ -1,7 +1,13 @@
 # BadApple utilities
 These are some useful utilities that I have ported to work in the BadApple shell. \
-Commands to run them (after connecting to the internet and performing [BadApple](https://github.com/applefritter-inc/BadApple)): 
-
+Commands to run them (after connecting to the internet and performing [BadApple](https://github.com/applefritter-inc/BadApple)), or by using an usb: 
+### With an USB
+1. Flash [ba_utils.img)(https://github.com/crosbreaker/BadApple-Utilities/releases/latest/download/ba_utils.img) to an USB
+2. Find the USB identifier with `fdisk -l`
+3. Mount the image with `mount /dev/sdX /us`, where `X` is your usb identifier, e.g. `/dev/sda`
+4. Now, to list payloads run ls /usb/
+5. Then, to execute a payload, run /usb/{payloadname}.sh
+# With an internet connection
 ### br0ker:  
 `curl -LO https://ba.crosbreaker.dev/daub.sh && sh daub.sh`
 
