@@ -68,29 +68,4 @@ read -p "are you sure you want to run daub?  (y/n) " -n 1 -r
 echo   
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     main
-fi	case $device_type in
-	"mmc")
-		intdis=/dev/mmcblk0
-  		intdis_prefix="p"
-		break
-		;;
-	"nvme")
-		intdis=/dev/nvme0
-  		intdis_prefix="n"
-		break
-		;;
-	"sda")
-		intdis=/dev/sda
-  		intdis_prefix=""
-		break
-		;;
-	*)
-		fail "an unknown error occured. this should not have happened."
-		;;
-	esac
-}
-read -p "NOTE if you have not freshly recovered, THIS WILL BRICK UR CHROMEBOOK UNTIL NEXT RECOVERY!  Proceed?(y/n) " -n 1 -r
-echo   
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    main
 fi
