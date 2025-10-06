@@ -22,3 +22,6 @@ Commands to run them (after connecting to the internet and performing [BadApple]
 
 ### Touch .developer_mode (even on volume group versions)
 `curl -LO https://ba.crosbreaker.dev/touchdev.sh && sh touchdev.sh`
+
+### spoob
+`/bin/sh <(https://raw.githubusercontent.com/crosbreaker/BadApple-Utilities/main/spoob.sh)`
