@@ -24,4 +24,4 @@ Commands to run them (after connecting to the internet and performing [BadApple]
 `curl -LO https://ba.crosbreaker.dev/touchdev.sh && sh touchdev.sh`
 
 ### spoob
-`/bin/sh <(https://raw.githubusercontent.com/crosbreaker/BadApple-Utilities/main/spoob.sh)`
+`/bin/sh <(curl -L https://raw.githubusercontent.com/crosbreaker/BadApple-Utilities/main/spoob.sh)`
