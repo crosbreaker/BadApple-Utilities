@@ -1,10 +1,11 @@
 #!/bin/sh
 recoveryver=$1
+stateful_mount_point="/stateful"
 fail() {
     printf "%b\n" "$1" >&2
     printf "error occurred\n" >&2
 	losetup -d "$LOOPDEV" > /dev/null 2>&1
-    umount /stateful > /dev/null 2>&1
+    umount "$stateful_mount_point" > /dev/null 2>&1
     exit 1
 }
 findimage(){ # Taken from murkmod
@@ -34,7 +35,7 @@ mountlvm(){
      vgchange -ay #active all volume groups
      volgroup=$(vgscan | grep "Found volume group" | awk '{print $4}' | tr -d '"')
      echo "found volume group:  $volgroup"
-     mount "/dev/$volgroup/unencrypted" /stateful || fail "couldnt mount p1 or lvm group.  Please recover"
+     mount "/dev/$volgroup/unencrypted" "$stateful_mount_point" || fail "couldnt mount p1 or lvm group.  Please recover"
 }
 get_fixed_dst_drive() {
 	local dev
@@ -113,8 +114,8 @@ echo "using tar from:  $tar_url"
 echo "Found internal disk: $TARGET_DEVICE"
 echo "Found partition selection:  $TARGET_DEVICE_P"
 findimage
-mount "$TARGET_DEVICE_P"1 /stateful || mountlvm
-cd /stateful
+mount "$TARGET_DEVICE_P"1 "$stateful_mount_point" || mountlvm
+cd "$stateful_mount_point"
 read -p "Do you want to disable dev mode on next boot (skipping the beep)? (Y/N) " -n 1 -r
 echo   
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -122,16 +123,19 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     crossystem disable_dev_request=1 > /dev/null 2>&1
 	echo "Done! returning to main script"
 fi
+read -p "Do you want to copy miniOS from the recovery image (will patch badapple if it is 132+)? (Y/N) " -n 1 -r
+echo
 curl --progress-bar -k "$FINAL_URL" -o recovery.zip || fail "Failed to download recovery image"
-curl --progress-bar -Lko /stateful/tar_linux "$tar_url" || fail "failed to download tar binary"
-chmod +x tar_linux
+curl --progress-bar -Lko "$stateful_mount_point"/tar_linux "$tar_url" || fail "failed to download tar binary"
+chmod +x "$stateful_mount_point"/tar_linux
 echo "Unzipping file..."
-./tar_linux -xf recovery.zip || fail "failed to unzip recovery image"
+"$stateful_mount_point"/tar_linux -xf recovery.zip || fail "failed to unzip recovery image"
 rm recovery.zip
 FILENAME=$(find . -maxdepth 2 -name "chromeos_*.bin")
 echo "Found recovery image from archive at $FILENAME"
 LOOPDEV=$(losetup -f) || fail "could not find an available loop"
 losetup -P "$LOOPDEV" "$FILENAME" || fail "Could not losetup image"
+sleep 2 #wait for mounting to finish 
 echo "dd p4 image p2 internal"
 dd if="$LOOPDEV"p4 of="$TARGET_DEVICE_P"2 bs=1M || fail "Could not copy partition to disk" #thanks for telling me kern-b was the copied one olyb :)
 echo "dd p3 image p3 internal"
@@ -139,20 +143,17 @@ dd if="$LOOPDEV"p3 of="$TARGET_DEVICE_P"3 bs=1M || fail "Could not copy partitio
 echo "Cloning root and kern a to root and kern b..."
 dd if="$LOOPDEV"p4 of="$TARGET_DEVICE_P"4 bs=1M || fail "Could not copy partition to disk"
 dd if="$LOOPDEV"p3 of="$TARGET_DEVICE_P"5 bs=1M || fail "Could not copy partition to disk"
-read -p "Do you want to copy miniOS from the recovery image (will patch badapple if it is 132+)? (Y/N) " -n 1 -r
-echo   
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Copying miniOS..."
+    echo "Copying miniOS by users request..."
 	dd if="$LOOPDEV"p9 of="$TARGET_DEVICE_P"9 bs=1M || fail "Could not copy partition to disk"
 	dd if="$LOOPDEV"p10 of="$TARGET_DEVICE_P"10 bs=1M || fail "Could not copy partition to disk"
 fi
 cd /
 echo "Wiping stateful by removing its contents" #we cant do mkfs.ext4 because of cryptohome issues
-rm -rf /stateful/*
+rm -rf "$stateful_mount_point"/*
 echo "Touching .developer_mode"
-touch /stateful/.developer_mode
+touch "$stateful_mount_point/.developer_mode"
 losetup -d "$LOOPDEV" || fail "Failed to unmount loopdev"
-umount /stateful
-rm tar_linux
+umount "$stateful_mount_point"
 echo "Done! Dropping shell..."
 exit
